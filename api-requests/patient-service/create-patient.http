@@ -7,7 +7,7 @@ Content-Type: application/json
   "email": "johndoe@gmail.com",
   "address": "123 main street",
   "dateofbirth": "1999-09-02",
-  "registereddate": "2025-07-06"
+  "registeredDate": "2025-07-06"
 }
 
 ###
