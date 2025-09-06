@@ -5,6 +5,7 @@ import com.example.patientservice.dtos.PatientRequestDTO;
 import com.example.patientservice.dtos.PatientResponseDTO;
 import com.example.patientservice.exception.EmailAlreadyExistException;
 import com.example.patientservice.exception.PatientNotFoundException;
+import com.example.patientservice.grpc.BillingServiceGrpcClient;
 import com.example.patientservice.mapper.PatientMapper;
 import com.example.patientservice.model.Patient;
 import com.example.patientservice.repository.PatientRepository;
@@ -20,6 +21,9 @@ public class PatientService {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private BillingServiceGrpcClient billingServiceGrpcClient;
 
     public List<PatientResponseDTO> getAllPatients() {
         List<Patient> patients = patientRepository.findAll();
