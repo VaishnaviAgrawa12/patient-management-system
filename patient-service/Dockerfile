@@ -1,22 +1,27 @@
-FROM maven:3.9.9-eclipse-temurin-21 AS builder
+# syntax=docker/dockerfile:1.4
 
+# ---------- Stage 1: Build ----------
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /app
 
+# Copy pom.xml first to leverage dependency caching
 COPY pom.xml .
 
-RUN mvn dependency:go-offline -B
+# Download dependencies (cached with --mount)
+RUN --mount=type=cache,target=/root/.m2 mvn -B dependency:go-offline
 
-COPY src ./src
+# Copy the rest of the project
+COPY . .
 
-RUN mvn clean package
+# Build the project (skip tests, cache .m2)
+RUN --mount=type=cache,target=/root/.m2 mvn -B package -DskipTests
 
-FROM openjdk:21-jdk AS runner
-
+# ---------- Stage 2: Run ----------
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
-COPY --from=builder ./app/target/patient-service-0.0.1-SNAPSHOT.jar ./app.jar
+# Copy built jar from builder stage
+COPY --from=builder /app/target/patient-service-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 4000
-
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
